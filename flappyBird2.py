@@ -15,8 +15,6 @@ pygame.init()
 win = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 #######################
 images = [pygame.transform.scale2x(pygame.image.load(os.path.join("images","bird1.png"))),pygame.transform.scale2x(pygame.image.load(os.path.join("images","bird2.png"))), pygame.transform.scale2x(pygame.image.load(os.path.join("images","bird3.png")))]
-# enemyImage = pygame.transform.scale2x(pygame.image.load(os.path.join("images","koop.png")))
-enemyImage = pygame.transform.scale(pygame.image.load(os.path.join("images","korpusik.jpg")),(64,48))
 backgroundImage = pygame.transform.scale(pygame.image.load(os.path.join("images","bg.png")),(WINDOW_WIDTH,WINDOW_HEIGHT))
 pipe_img = pygame.transform.scale2x(pygame.image.load(os.path.join("images","pipe.png")))
 baseImage = pygame.transform.scale2x(pygame.image.load(os.path.join("images","base.png")).convert_alpha())
@@ -65,48 +63,6 @@ class Bird:#anacan
         return pygame.mask.from_surface(self.animation)
 
 
-#josh and eric
-#makes Enemies class
-class Enemy(object):#eric
-    #Dr. Korpusik, if you are reading this I would again like to say that
-    #we do NOT, in fact, think of you as an enemy-anacan
-    def __init__(self, x):
-        self.x = x
-        self.direction = True
-        self.vel = 5
-        self.pic = enemyImage
-        self.passed = False
-        self.y = 0
-        self.randomThing = random.uniform(-1,1)
-       
-        self.setY()
-    def setY(self):
-        self.y = random.randrange(50,750)
-   
-    def move(self):
-        self.x -= self.vel
- 
- 
-        if self.y < 0 or self.y > 800:
-            self.direction = not (self.direction)
-        if self.direction:
-            self.y -= 5
-        else:
-            self.y += 5
-   
-    def drawEnemies(self, win):
-        win.blit(self.pic, (self.x, self.y))
-        # win.blit(self.pic, (self.x, self.y))
-    """
-    def collide(self, bird, win):
-        birdMask = bird.get_mask()
-        enemyMask = pygame.mask.from_surface(self.pic)
-        #Offset = (self.x - bird.x, self.y() - round(bird.y))
-        #xPoint = birdMask.overlap(birdMask, Offset)
-        if xPoint:
-            return True
-        return False
-    """
  
 #makes Pipe class
 #pipes are what are going to move, eventually will have variability in height
@@ -165,36 +121,6 @@ def pipe_bird_interaction(pipes, bird):
     if(pipes[0].passed and (pipes[0].x + pipe.pipeTop.get_width())<=0):
             pipes.remove(pipes[0])
  
-def enemy_bird_interaction(enemies, bird):
-    #josh and eric
-    enemies = enemies
-    add_enemy = False
-    for enemy in enemies:
-        #pipe.drawPipe(win)
-        enemy.move()
-       
-        if not enemy.passed and (enemy.x) < bird.x:
-            enemy.passed = True
-            enemies.append(Enemy(WINDOW_WIDTH))
-    if(enemies[0].passed and (enemies[0].x)<=0):
-            enemies.remove(enemies[0])
-"""
-def enemy_bird_interaction(koops, bird):
-    koops = koops
-    add_koop = False
-    for koop in koops:
-        #pipe.drawPipe(win)
-        koop.move()
-        if koop.collide(bird, win) or bird.isOffScreen():
-            bird.isAlive = False
-        if not koop.passed < bird.x:
-            global score
-            score +=1
-            koop.passed = True
-            koops.append(Enemies(WINDOW_WIDTH, WINDOW_HEIGHT - 40))
-    if koops[0].passed <=0:
-            koops.remove(koops[0])
-"""
 #anacan
 def updateScore():
     global score
@@ -203,15 +129,13 @@ def updateScore():
     win.blit(text, (10,10))
     pygame.display.flip()
 
-#this one was sorta a combo of everyone I believe
-def draw(win,bird,pipes,enemies):
+#anacan and josh
+def draw(win,bird,pipes):
     bird.ani()
     win.blit(backgroundImage, (0,0))
     win.blit(bird.animation, (bird.x,bird.y))
     for pipe in pipes:
-        pipe.drawPipe(win)
-    for enemy in enemies:
-        enemy.drawEnemies(win)    
+        pipe.drawPipe(win)   
    
     updateScore()
     pygame.display.update()
@@ -221,14 +145,10 @@ def main():
     #josh and anacan
     updateScore()
     bird = Bird(150)
-    #koop = Enemies(180, 150)
-    # koop2 = Enemies(220, 140)
+
     pipe = Pipe(WINDOW_WIDTH)
-    enemy = Enemy(WINDOW_WIDTH)
-    # koop = Enemies(WINDOW_WIDTH, WINDOW_HEIGHT - 40)
     pipes = [pipe]
-    enemies = [enemy]
-    #koops = [koop]
+
     runCondition = True
     while(runCondition):
         if(bird.isAlive):
@@ -244,9 +164,8 @@ def main():
                 bird.grav()
             #print(len(pipes))
             #koop.move()
-            draw(win, bird, pipes, enemies)
+            draw(win, bird, pipes)
             pipe_bird_interaction(pipes,bird)
-            enemy_bird_interaction(enemies, bird)
         else:
             os.system('python driver.py')
             #runs the driver file again
